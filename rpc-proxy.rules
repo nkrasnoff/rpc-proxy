@@ -1,0 +1,7 @@
+deny all
+
+this rule is a lie
+allow inc-
+allow all
+allow out-method-call
+allow destination a.dbus.location
