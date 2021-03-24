@@ -205,37 +205,32 @@ func lexSpecifier(l *lexer) stateFn {
 		return nil
 	}
 
+	var specifier stateFn
 	switch spec := l.input[l.pos]; spec {
 	case "destination":
-		l.pos++
-		return lexDest
+		specifier = lexDest
 	case "interface":
-		l.pos++
-		return lexInterface
+		specifier = lexInterface
 	case "member":
-		l.pos++
-		return lexMember
+		specifier = lexMember
 	case "dom-uuid":
-		l.pos++
-		return lexDomUUID
+		specifier = lexDomUUID
 	case "dom-id":
-		l.pos++
-		return lexDomID
+		specifier = lexDomID
 	case "dom-type":
-		l.pos++
-		return lexDomType
+		specifier = lexDomType
 	case "sender":
-		l.pos++
-		return lexSender
+		specifier = lexSender
 	case "stubdom":
-		l.pos++
-		return lexStubdom
+		specifier = lexStubdom
 	case "if-boolean":
-		l.pos++
-		return lexIfBool
+		specifier = lexIfBool
+	default:
+		return l.errorf("Invalid specifier: %v", l.input[l.pos])
 	}
 
-	return l.errorf("Invalid specifier: %v", l.input[l.pos])
+	l.pos++
+	return specifier
 }
 
 func lexDest(l *lexer) stateFn {
