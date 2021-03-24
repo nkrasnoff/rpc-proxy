@@ -70,7 +70,7 @@ func createRule(ruleSlc []string) Rule {
 		fmt.Println("Item: ", aItem)
 
 	}
-	fmt.Println("The thread got closed!")
+	//fmt.Println("The thread got closed!")
 
 	var newRule Rule
 	newRule.RDirection = Incoming

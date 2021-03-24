@@ -4,4 +4,9 @@ this rule is a lie
 allow inc-
 allow all
 allow out-method-call
-allow destination a.dbus.location
+allow destination a.dbus.location if-boolean apple false stubdom tree pizza
+deny all this probably works but shouldn't
+
+al oisagt oiwerw
+
+allow destination &the.wer
