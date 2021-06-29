@@ -55,7 +55,9 @@ const (
 )
 
 //ReadPolicy from config files and return rules
-func ReadPolicy(path string) {
+func ReadPolicy(path string) []Rule {
+	var rules []Rule
+
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -71,12 +73,14 @@ func ReadPolicy(path string) {
 		}
 
 		r := createRule(strings.Fields(ruleStr))
+		rules = append(rules, r)
 		fmt.Println("Rule: ", r)
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+	return rules
 }
 
 func createRule(ruleSlc []string) Rule {
