@@ -5,15 +5,32 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
 //Rule for rpc-proxy Firewall
 type Rule struct {
-	RDirection   Direction
-	RSubject     Subject
-	RDestination string
-	RInt         int
+	Allow       bool
+	Direction   Direction
+	Subject     Subject
+	Destination string
+	Interface   string
+	Member      string
+	DomUUID     string
+	DomID       string
+	DomType     string
+	Sender      string
+	SpecStubdom bool
+	Stubdom     bool
+	IfBool      IfBool
+	Int         int
+}
+
+//IfBool contains an Identifier that must match a bool condition to be accepted
+type IfBool struct {
+	Condition  bool
+	Identifier string
 }
 
 //Direction is whether a message is sent or recieved by rpc-proxy
@@ -50,14 +67,11 @@ func ReadPolicy(path string) {
 		ruleStr := scanner.Text()
 		fmt.Println("Read line: ", ruleStr)
 		if ruleStr == "" || ruleStr[0] == '#' {
-			fmt.Println("TODO: SKIP")
-		} else {
-			ruleSlc := strings.Fields(ruleStr)
-
-			r := createRule(ruleSlc)
-			fmt.Println("Rule: ", r)
+			continue
 		}
 
+		r := createRule(strings.Fields(ruleStr))
+		fmt.Println("Rule: ", r)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -67,15 +81,48 @@ func ReadPolicy(path string) {
 
 func createRule(ruleSlc []string) Rule {
 	l := lex("Testing", ruleSlc)
+	var newRule Rule
 	for aItem := range l.items {
-		fmt.Println("Item: ", aItem)
+		switch aItem.Ityp {
+		case itemRule:
+			newRule.Allow = aItem.val == "allow"
+		case itemDirSub:
+			//As item values are passed as a string Direction and Subject are passed as
+			//a string where the first character represents the Direcion and the second
+			//represents the Subject
+			dirsub, _ := strconv.Atoi(aItem.val)
+			newRule.Direction = Direction(dirsub / 10)
+			newRule.Subject = Subject(dirsub % 10)
+		case itemDest:
+			newRule.Destination = aItem.val
+		case itemInter:
+			newRule.Interface = aItem.val
+		case itemMember:
+			newRule.Member = aItem.val
+		case itemDomUUID:
+			newRule.DomUUID = aItem.val
+		case itemDomID:
+			newRule.DomID = aItem.val
+		case itemDomType:
+			newRule.DomType = aItem.val
+		case itemSender:
+			newRule.Sender = aItem.val
+		case itemStubdom:
+			newRule.SpecStubdom = true
+			newRule.Stubdom = aItem.val == "true"
+		case itemIfBoolTrue:
+			newRule.IfBool.Condition = true
+			newRule.IfBool.Identifier = aItem.val
+		case itemIfBoolFalse:
+			newRule.IfBool.Condition = false
+			newRule.IfBool.Identifier = aItem.val
+		case itemError:
+			log.Fatal(aItem.val)
+			os.Exit(1)
+
+		}
 
 	}
-	//fmt.Println("The thread got closed!")
-
-	var newRule Rule
-	newRule.RDirection = Incoming
-	newRule.RSubject = Error
 
 	return newRule
 }

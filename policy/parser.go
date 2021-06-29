@@ -105,18 +105,6 @@ func (l *lexer) errorf(format string, args ...interface{}) stateFn {
 	return nil
 }
 
-func lexTheRestPlaceholder(l *lexer) stateFn {
-	if l.pos >= len(l.input) {
-		return nil
-	}
-
-	i := item{itemMember, l.input[l.pos]}
-	l.items <- i
-	l.pos++
-	return lexTheRestPlaceholder
-
-}
-
 func lexRule(l *lexer) stateFn {
 	if l.input[l.pos] == "allow" || l.input[l.pos] == "deny" {
 		l.emit(itemRule)
