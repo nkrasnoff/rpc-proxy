@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println("vim-go")
-	policy.ReadPolicy("rpc-proxy1.rules")
-	fmt.Println(policy.Rule{})
+	fmt.Println("Starting RPC-Proxy")
+	rules := policy.ReadPolicy("rpc-proxy1.rules")
+	fmt.Println(rules)
 }
