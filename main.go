@@ -13,4 +13,5 @@ func main() {
 	fmt.Println("Starting RPC-Proxy")
 	rules := policy.ReadPolicy("rpc-proxy1.rules")
 	fmt.Println(rules)
+	bouncer()
 }
